@@ -99,9 +99,9 @@ void ApplyConstraints(SparseMatrix<float>& K, const vector<Constraint>& constrai
 
 	for (int k = 0; k < K.outerSize(); ++k)
 	{
-		for (Eigen::SparseMatrix<float>::InnerIterator it(K, k); it; ++it)
+		for (SparseMatrix<float>::InnerIterator it(K, k); it; ++it)
 		{
-			for (std::vector<int>::iterator idit = indicesToConstraint.begin(); idit != indicesToConstraint.end(); ++idit)
+			for (vector<int>::iterator idit = indicesToConstraint.begin(); idit != indicesToConstraint.end(); ++idit)
 			{
 				SetConstraints(it, *idit);
 			}
@@ -113,19 +113,19 @@ int main(int argc, char *argv[])
 {
 	if ( argc != 3 )
     {
-        std::cout<<"usage: "<< argv[0] <<" <input file> <output file>\n";
+        cout<<"usage: "<< argv[0] <<" <input file> <output file>\n";
         return 1;
     }
 		
-	std::ifstream infile(argv[1]);
-	std::ofstream outfile(argv[2]);
+	ifstream infile(argv[1]);
+	ofstream outfile(argv[2]);
 	
 	float poissonRatio, youngModulus;
 	infile >> poissonRatio >> youngModulus;
   
    //Elasticity matrix D
 
-	Eigen::Matrix3f D;
+	Matrix3f D;
 	D <<
 		1.0f,			poissonRatio,	0.0f,
 		poissonRatio,	1.0,			0.0f,
@@ -183,8 +183,8 @@ int main(int argc, char *argv[])
 		loads[2 * node + 1] = y;
 	}
 	
-	std::vector<Eigen::Triplet<float> > triplets;
-	for (std::vector<Element>::iterator it = elements.begin(); it != elements.end(); ++it)
+	vector<Triplet<float> > triplets;
+	for (vector<Element>::iterator it = elements.begin(); it != elements.end(); ++it)
 	{
 		it->CalculateStiffnessMatrix(D, triplets);
 	}
@@ -194,33 +194,33 @@ int main(int argc, char *argv[])
 
 	ApplyConstraints(globalK, constraints);
 
-	std::cout << "Global stiffness matrix:\n";
-	std::cout <<  (globalK) << std::endl;
+	cout << "Global stiffness matrix:\n";
+	cout <<  (globalK) << endl;
 
-	std::cout << "Loads vector:" << std::endl << loads << std::endl << std::endl;
+	cout << "Loads vector:" << endl << loads << endl << endl;
 
-	Eigen::SimplicialLDLT<Eigen::SparseMatrix<float> > solver(globalK);
+	SimplicialLDLT<SparseMatrix<float> > solver(globalK);
 
-	Eigen::VectorXf displacements = solver.solve(loads);
+	VectorXf displacements = solver.solve(loads);
   
-    std::cout << "Displacements vector:" << std::endl << displacements << std::endl;
+    cout << "Displacements vector:" << endl << displacements << endl;
 
-	outfile << displacements << std::endl;
-	std::cout << "Stresses:" << std::endl;
+	outfile << displacements << endl;
+	cout << "Stresses:" << endl;
 
-	for (std::vector<Element>::iterator it = elements.begin(); it != elements.end(); ++it)
+	for (vector<Element>::iterator it = elements.begin(); it != elements.end(); ++it)
 	{
-		Eigen::Matrix<float, 6, 1> delta;
+		Matrix<float, 6, 1> delta;
 		delta << displacements.segment<2>(2 * it->nodesIds[0]),
 				 displacements.segment<2>(2 * it->nodesIds[1]),
 				 displacements.segment<2>(2 * it->nodesIds[2]);
 
-		Eigen::Vector3f sigma = D * it->B * delta;
+		Vector3f sigma = D * it->B * delta;
 		float sigma_mises = sqrt(sigma[0] * sigma[0] - sigma[0] * sigma[1] + sigma[1] * sigma[1] + 3.0f * sigma[2] * sigma[2]);
    
-      std::cout << sigma_mises << std::endl;
+      cout << sigma_mises << endl;
 
-		outfile << sigma_mises << std::endl;
+		outfile << sigma_mises << endl;
 	}
 	return 0;
 }
