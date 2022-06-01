@@ -1,5 +1,9 @@
 #include "fem.h"
 
+using namespace std;
+using namespace Eigen;
+
+
 
 
 struct Element
