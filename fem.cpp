@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
 		it->CalculateStiffnessMatrix(D, triplets);
 	}
 
-	Eigen::SparseMatrix<float> globalK(2 * nodesCount, 2 * nodesCount);
+	SparseMatrix<float> globalK(2 * nodesCount, 2 * nodesCount);
 	globalK.setFromTriplets(triplets.begin(), triplets.end());
 
 	ApplyConstraints(globalK, constraints);
