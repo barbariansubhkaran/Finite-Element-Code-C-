@@ -8,9 +8,9 @@ using namespace Eigen;
 
 struct Element
 {
-	void CalculateStiffnessMatrix(const Eigen::Matrix3f& D, std::vector<Eigen::Triplet<float> >& triplets);
+	void CalculateStiffnessMatrix(const Matrix3f& D, vector<Triplet<float> >& triplets);
 
-	Eigen::Matrix<float, 3, 6> B;
+	Matrix<float, 3, 6> B;
 	int nodesIds[3];
 };
 
