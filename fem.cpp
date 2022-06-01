@@ -28,22 +28,22 @@ struct Constraint
 
 int							nodesCount;
 int							loadsCount;
-Eigen::VectorXf				nodesX;
-Eigen::VectorXf				nodesY;
-Eigen::VectorXf				loads;
-std::vector< Element >		elements;
-std::vector< Constraint >	constraints;
+VectorXf				nodesX;
+VectorXf				nodesY;
+VectorXf				loads;
+vector< Element >		elements;
+vector< Constraint >	constraints;
 
-void Element::CalculateStiffnessMatrix(const Eigen::Matrix3f& D, std::vector<Eigen::Triplet<float> >& triplets)
+void Element::CalculateStiffnessMatrix(const Matrix3f& D, vector<Triplet<float> >& triplets)
 {
-	Eigen::Vector3f x, y;
+	Vector3f x, y;
 	x << nodesX[nodesIds[0]], nodesX[nodesIds[1]], nodesX[nodesIds[2]];
 	y << nodesY[nodesIds[0]], nodesY[nodesIds[1]], nodesY[nodesIds[2]];
 	
-	Eigen::Matrix3f C;
-	C << Eigen::Vector3f(1.0f, 1.0f, 1.0f), x, y;
+	Matrix3f C;
+	C << Vector3f(1.0f, 1.0f, 1.0f), x, y;
 	
-	Eigen::Matrix3f IC = C.inverse();
+	Matrix3f IC = C.inverse();
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -54,16 +54,16 @@ void Element::CalculateStiffnessMatrix(const Eigen::Matrix3f& D, std::vector<Eig
 		B(2, 2 * i + 0) = IC(2, i);
 		B(2, 2 * i + 1) = IC(1, i);
 	}
-	Eigen::Matrix<float, 6, 6> K = B.transpose() * D * B * C.determinant() / 2.0f;
+	Matrix<float, 6, 6> K = B.transpose() * D * B * C.determinant() / 2.0f;
 
 	for (int i = 0; i < 3; i++)
 	{
 		for (int j = 0; j < 3; j++)
 		{
-			Eigen::Triplet<float> trplt11(2 * nodesIds[i] + 0, 2 * nodesIds[j] + 0, K(2 * i + 0, 2 * j + 0));
-			Eigen::Triplet<float> trplt12(2 * nodesIds[i] + 0, 2 * nodesIds[j] + 1, K(2 * i + 0, 2 * j + 1));
-			Eigen::Triplet<float> trplt21(2 * nodesIds[i] + 1, 2 * nodesIds[j] + 0, K(2 * i + 1, 2 * j + 0));
-			Eigen::Triplet<float> trplt22(2 * nodesIds[i] + 1, 2 * nodesIds[j] + 1, K(2 * i + 1, 2 * j + 1));
+			Triplet<float> trplt11(2 * nodesIds[i] + 0, 2 * nodesIds[j] + 0, K(2 * i + 0, 2 * j + 0));
+			Triplet<float> trplt12(2 * nodesIds[i] + 0, 2 * nodesIds[j] + 1, K(2 * i + 0, 2 * j + 1));
+			Triplet<float> trplt21(2 * nodesIds[i] + 1, 2 * nodesIds[j] + 0, K(2 * i + 1, 2 * j + 0));
+			Triplet<float> trplt22(2 * nodesIds[i] + 1, 2 * nodesIds[j] + 1, K(2 * i + 1, 2 * j + 1));
 
 			triplets.push_back(trplt11);
 			triplets.push_back(trplt12);
@@ -73,7 +73,7 @@ void Element::CalculateStiffnessMatrix(const Eigen::Matrix3f& D, std::vector<Eig
 	}
 }
 
-void SetConstraints(Eigen::SparseMatrix<float>::InnerIterator& it, int index)
+void SetConstraints(SparseMatrix<float>::InnerIterator& it, int index)
 {
 	if (it.row() == index || it.col() == index)
 	{
@@ -81,11 +81,11 @@ void SetConstraints(Eigen::SparseMatrix<float>::InnerIterator& it, int index)
 	}
 }
 
-void ApplyConstraints(Eigen::SparseMatrix<float>& K, const std::vector<Constraint>& constraints)
+void ApplyConstraints(SparseMatrix<float>& K, const vector<Constraint>& constraints)
 {
-	std::vector<int> indicesToConstraint;
+	vector<int> indicesToConstraint;
 
-	for (std::vector<Constraint>::const_iterator it = constraints.begin(); it != constraints.end(); ++it)
+	for (vector<Constraint>::const_iterator it = constraints.begin(); it != constraints.end(); ++it)
 	{
 		if (it->type & Constraint::UX)
 		{
