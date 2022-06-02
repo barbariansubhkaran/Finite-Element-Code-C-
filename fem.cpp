@@ -111,7 +111,7 @@ void ApplyConstraints(SparseMatrix<float>& K, const vector<Constraint>& constrai
 
 int main(int argc, char *argv[])
 {
-	#pragma omp parallel num_threads(4)
+	#pragma omp parallel 
 {	
 	
 	if ( argc != 3 )
