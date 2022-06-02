@@ -3,7 +3,7 @@
 using namespace std;
 using namespace Eigen;
 
-343
+
 
 
 struct Element
