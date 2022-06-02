@@ -112,6 +112,7 @@ void ApplyConstraints(SparseMatrix<float>& K, const vector<Constraint>& constrai
 int main(int argc, char *argv[])
 {
 	#pragma omp parallel num_threads(4)
+{	
 	
 	if ( argc != 3 )
     {
@@ -227,5 +228,7 @@ int main(int argc, char *argv[])
 
 		outfile << sigma_mises << endl;
 	}
+	
+}	
 	return 0;
 }
