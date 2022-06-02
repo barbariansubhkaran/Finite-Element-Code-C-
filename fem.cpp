@@ -3,7 +3,7 @@
 using namespace std;
 using namespace Eigen;
 
-
+343
 
 
 struct Element
@@ -39,10 +39,10 @@ void Element::CalculateStiffnessMatrix(const Matrix3f& D, vector<Triplet<float> 
 	Vector3f x, y;
 	x << nodesX[nodesIds[0]], nodesX[nodesIds[1]], nodesX[nodesIds[2]];
 	y << nodesY[nodesIds[0]], nodesY[nodesIds[1]], nodesY[nodesIds[2]];
-	
+
 	Matrix3f C;
 	C << Vector3f(1.0f, 1.0f, 1.0f), x, y;
-	
+
 	Matrix3f IC = C.inverse();
 
 	for (int i = 0; i < 3; i++)
@@ -111,20 +111,20 @@ void ApplyConstraints(SparseMatrix<float>& K, const vector<Constraint>& constrai
 
 int main(int argc, char *argv[])
 {
-	
-	
+
+
 	if ( argc != 3 )
     {
         cout<<"usage: "<< argv[0] <<" <input file> <output file>\n";
         return 1;
     }
-		
+
 	ifstream infile(argv[1]);
 	ofstream outfile(argv[2]);
-	
+
 	float poissonRatio, youngModulus;
 	infile >> poissonRatio >> youngModulus;
-  
+
    //Elasticity matrix D
 
 	Matrix3f D;
@@ -169,13 +169,13 @@ int main(int argc, char *argv[])
 	loads.resize(2 * nodesCount);
 	loads.setZero();
 
-	
+
 	loads.resize(2 * nodesCount);
 	loads.setZero();
 
 	infile >> loadsCount;
 
-	
+
 	for (int i = 0; i < loadsCount; ++i)
 	{
 		int node;
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
 		loads[2 * node + 0] = x;
 		loads[2 * node + 1] = y;
 	}
-	
+
 	vector<Triplet<float> > triplets;
 	for (vector<Element>::iterator it = elements.begin(); it != elements.end(); ++it)
 	{
@@ -204,17 +204,17 @@ int main(int argc, char *argv[])
 	SimplicialLDLT<SparseMatrix<float> > solver(globalK);
 
 	VectorXf displacements = solver.solve(loads);
-  
+
     cout << "Displacements vector:" << endl << displacements << endl;
 
 	outfile << displacements << endl;
 	cout << "Stresses:" << endl;
-       
-	
+
+
 	for (vector<Element>::iterator it = elements.begin(); it != elements.end(); ++it)
 	{
-		
-		
+
+
 		Matrix<float, 6, 1> delta;
 		delta << displacements.segment<2>(2 * it->nodesIds[0]),
 				 displacements.segment<2>(2 * it->nodesIds[1]),
@@ -222,12 +222,12 @@ int main(int argc, char *argv[])
 
 		Vector3f sigma = D * it->B * delta;
 		float sigma_mises = sqrt(sigma[0] * sigma[0] - sigma[0] * sigma[1] + sigma[1] * sigma[1] + 3.0f * sigma[2] * sigma[2]);
-   
+
       cout << sigma_mises << endl;
 
 		outfile << sigma_mises << endl;
 	}
-	
-	
+
+
 	return 0;
 }
