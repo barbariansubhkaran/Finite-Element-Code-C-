@@ -111,6 +111,8 @@ void ApplyConstraints(SparseMatrix<float>& K, const vector<Constraint>& constrai
 
 int main(int argc, char *argv[])
 {
+	#pragma omp parallel num_threads(4)
+	
 	if ( argc != 3 )
     {
         cout<<"usage: "<< argv[0] <<" <input file> <output file>\n";
@@ -210,6 +212,9 @@ int main(int argc, char *argv[])
 
 	for (vector<Element>::iterator it = elements.begin(); it != elements.end(); ++it)
 	{
+		#pragma omp for
+		
+		
 		Matrix<float, 6, 1> delta;
 		delta << displacements.segment<2>(2 * it->nodesIds[0]),
 				 displacements.segment<2>(2 * it->nodesIds[1]),
