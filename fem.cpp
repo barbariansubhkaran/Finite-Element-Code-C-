@@ -209,6 +209,8 @@ int main(int argc, char *argv[])
 
 	outfile << displacements << endl;
 	cout << "Stresses:" << endl;
+	
+	cout << endl;
 
 
 	for (vector<Element>::iterator it = elements.begin(); it != elements.end(); ++it)
