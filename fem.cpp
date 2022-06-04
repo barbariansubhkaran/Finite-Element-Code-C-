@@ -208,10 +208,13 @@ int main(int argc, char *argv[])
     cout << "Displacements vector:" << endl << displacements << endl;
 
 	outfile << displacements << endl;
-	cout << "Stresses:" << endl;
 	
 	cout << endl;
 
+	
+	cout << "Stresses:" << endl;
+	
+	
 
 	for (vector<Element>::iterator it = elements.begin(); it != elements.end(); ++it)
 	{
